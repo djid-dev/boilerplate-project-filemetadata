@@ -1,9 +1,11 @@
 var express = require('express');
 var cors = require('cors');
+const multer = require('multer');
 require('dotenv').config()
 
 var app = express();
 
+const upload = multer({ dest: 'public/' });
 app.use(cors());
 app.use('/public', express.static(process.cwd() + '/public'));
 
@@ -11,6 +13,20 @@ app.get('/', function (req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
+
+app.post('/api/fileanalyse', upload.single('upfile'), function (req, res) {
+  if (!req.file) {
+    return res.json({ error: 'No file uploaded' });
+  }
+  
+  const fileInfo = {
+    name: req.file.originalname,
+    type: req.file.mimetype,
+    size: req.file.size
+  };
+  
+  res.json(fileInfo);
+});
 
 
 
